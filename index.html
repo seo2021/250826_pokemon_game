@@ -2,12 +2,29 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta property="og:title" content="포켓몬 배틀 | 랜덤 대결 ⚔️" />
+    <meta
+      property="og:description"
+      content="랜덤 포켓몬을 뽑아 한판 승부해보자!"
+    />
+    <meta
+      property="og:image"
+      content="https://mblogthumb-phinf.pstatic.net/20151123_121/swyl1220_14482090712739paMa_PNG/128.png?type=w420"
+    />
     <title>포켓몬 대결</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
     <style>
+      @font-face {
+        font-family: "Cafe24-Surround";
+        src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssurround.woff")
+          format("woff");
+        font-weight: normal;
+        font-display: swap;
+      }
       :root {
         --panel: #1b1f3a;
         --panel2: #0f1227;
@@ -22,7 +39,7 @@
         margin: 0;
         background: radial-gradient(#131633, #070815);
         color: #fff;
-        font-family: "Press Start 2P", system-ui, sans-serif;
+        font-family: "Cafe24-Surround", system-ui, sans-serif;
         letter-spacing: 0.5px;
       }
       .wrap {
@@ -41,7 +58,67 @@
         display: grid;
         grid-template-columns: 1fr 120px 1fr;
         align-items: center;
-        gap: 16px;
+        gap: 24px;
+        margin-bottom: 40px;
+      }
+      .actions {
+        margin-top: 0; /* arena에서 이미 여백을 줬으니 0 */
+        gap: 14px; /* 버튼 간격 넓힘 */
+      }
+      /* 공통 버튼 기본은 그대로 두고, 아래 두 버튼만 오버라이드 */
+      #battle,
+      #reroll-both {
+        font-size: 16px; /* 글자 크기 ↑ */
+        padding: 16px 28px; /* 버튼 크기 ↑ */
+        border-width: 4px;
+        border-radius: 14px;
+        box-shadow: 0 6px 0 #0b0e2e;
+      }
+      /* 대결 버튼: 레트로 레드 */
+      #battle {
+        background: linear-gradient(180deg, #ff3b3b, #b31212);
+        border-color: #6b0f0f;
+      }
+      #battle:hover {
+        filter: brightness(1.06) saturate(1.15);
+      }
+
+      /* 모두 랜덤 */
+      #reroll-both {
+        font-size: 16px;
+        padding: 16px 28px;
+        border-width: 4px;
+        border-radius: 14px;
+        color: #fff;
+        border-color: #6b0f0f;
+        background: linear-gradient(
+          135deg,
+          #ff2a2a 0%,
+          #ff6a00 50%,
+          #ffd400 100%
+        );
+        background-size: 200% 200%;
+        animation: sunsetShift 5s ease infinite;
+        box-shadow: 0 6px 0 #2b0a0a, 0 0 14px rgba(255, 106, 0, 0.35);
+      }
+      #reroll-both:hover {
+        animation-duration: 2.2s;
+        filter: brightness(1.08) saturate(1.15);
+      }
+      #reroll-both:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #2b0a0a;
+      }
+      @keyframes sunsetShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
       }
       .vs {
         text-align: center;
@@ -132,10 +209,10 @@
       }
 
       .result {
-        margin-top: 18px;
+        margin-top: 28px;
         text-align: center;
         min-height: 1.2em;
-        font-size: 14px;
+        font-size: 24px;
         color: #9ec9ff;
         text-shadow: 0 0 8px rgba(158, 201, 255, 0.4);
       }
@@ -174,7 +251,7 @@
           </div>
           <div class="name" id="left-name">선택 전</div>
           <div id="left-types"></div>
-          <div class="controls">
+          <div class="controls actions">
             <button id="left-random">포켓몬 랜덤 선택하기</button>
           </div>
         </div>
