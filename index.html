@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>포켓몬 대결</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --panel: #1b1f3a;
+        --panel2: #0f1227;
+        --accent: #ffd400;
+        --line: #3a3f7a;
+        --bg: #0a0c1a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: radial-gradient(#131633, #070815);
+        color: #fff;
+        font-family: "Press Start 2P", system-ui, sans-serif;
+        letter-spacing: 0.5px;
+      }
+      .wrap {
+        max-width: 960px;
+        margin: 40px auto;
+        padding: 20px;
+      }
+      .title {
+        text-align: center;
+        font-size: 32px;
+        margin-bottom: 16px;
+        color: var(--accent);
+        text-shadow: 0 0 8px rgba(255, 212, 0, 0.6);
+      }
+      .arena {
+        display: grid;
+        grid-template-columns: 1fr 120px 1fr;
+        align-items: center;
+        gap: 16px;
+      }
+      .vs {
+        text-align: center;
+        font-size: 26px;
+        color: #fff;
+        text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+      }
+      .card {
+        position: relative;
+        background: linear-gradient(180deg, var(--panel), var(--panel2));
+        border: 4px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35), inset 0 0 0 4px #000;
+        isolation: isolate;
+      }
+      .name {
+        margin: 8px 0 12px;
+        font-size: 14px;
+        min-height: 1.2em;
+        color: #fff;
+      }
+      .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        margin: 2px;
+        border-radius: 12px;
+        color: #000;
+        font-size: 10px;
+        background: #ddd;
+      }
+      .imgwrap {
+        width: 180px;
+        height: 180px;
+        border-radius: 16px;
+        background: #10122a;
+        display: grid;
+        place-items: center;
+        margin-bottom: 10px;
+        border: 3px solid #2b2f5e;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+      }
+      .imgwrap img {
+        width: 150px;
+        height: 150px;
+        image-rendering: pixelated;
+      }
+      .placeholder {
+        font-size: 42px;
+        color: #6a6fb1;
+        opacity: 0.8;
+      }
+      .controls {
+        margin: 18px 0 6px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      button {
+        font-family: inherit;
+        font-size: 12px;
+        padding: 12px 16px;
+        cursor: pointer;
+        border: 3px solid var(--line);
+        color: #fff;
+        background: #212558;
+        border-radius: 12px;
+        box-shadow: 0 4px 0 #0b0e2e;
+        transition: transform 0.06s ease;
+      }
+      button:hover {
+        filter: brightness(1.08);
+      }
+      button:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 0 #0b0e2e;
+      }
+      button[disabled] {
+        opacity: 0.45;
+        cursor: not-allowed;
+        filter: grayscale(50%);
+      }
+
+      .result {
+        margin-top: 18px;
+        text-align: center;
+        min-height: 1.2em;
+        font-size: 14px;
+        color: #9ec9ff;
+        text-shadow: 0 0 8px rgba(158, 201, 255, 0.4);
+      }
+
+      /* 승패 연출 */
+      .win {
+        outline: 4px solid #1eed97;
+        box-shadow: 0 0 16px #1eed9777, inset 0 0 0 4px #000;
+      }
+      .lose {
+        animation: shake 0.2s ease-in-out 4;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-6px);
+        }
+        75% {
+          transform: translateX(6px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1 class="title">포켓몬 대결!</h1>
+
+      <div class="arena">
+        <!-- LEFT -->
+        <div class="card" id="left-card">
+          <div class="imgwrap" id="left-img">
+            <div class="placeholder">?</div>
+          </div>
+          <div class="name" id="left-name">선택 전</div>
+          <div id="left-types"></div>
+          <div class="controls">
+            <button id="left-random">포켓몬 랜덤 선택하기</button>
+          </div>
+        </div>
+
+        <div class="vs">VS</div>
+
+        <!-- RIGHT -->
+        <div class="card" id="right-card">
+          <div class="imgwrap" id="right-img">
+            <div class="placeholder">?</div>
+          </div>
+          <div class="name" id="right-name">선택 전</div>
+          <div id="right-types"></div>
+          <div class="controls">
+            <button id="right-random">포켓몬 랜덤 선택하기</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls" style="margin-top: 18px">
+        <button id="battle" disabled>대결!</button>
+        <button id="reroll-both">모두 랜덤 선택하기</button>
+      </div>
+
+      <div class="result" id="battle-result"></div>
+    </div>
+
+    <script>
+      // ===== 타입 색상 (영문 타입명 그대로 사용) =====
+      const TYPE_COLORS = {
+        fire: "orangered",
+        water: "dodgerblue",
+        grass: "limegreen",
+        bug: "darkkhaki",
+        normal: "lightgray",
+        poison: "mediumpurple",
+        electric: "gold",
+        ground: "sandybrown",
+        fairy: "lightpink",
+        fighting: "indianred",
+        psychic: "hotpink",
+        rock: "darkgoldenrod",
+        ghost: "rebeccapurple",
+        ice: "lightcyan",
+        dragon: "slateblue",
+        flying: "skyblue",
+        dark: "#444",
+        steel: "#8892a6",
+      };
+
+      // ===== 한국어 이름 캐시 =====
+      const KO_NAME_CACHE_KEY = "poke_ko_names_v1";
+      let koNameCache = JSON.parse(
+        localStorage.getItem(KO_NAME_CACHE_KEY) || "{}"
+      );
+
+      async function getKoreanNameById(id) {
+        if (koNameCache[id]) return koNameCache[id];
+        const res = await fetch(
+          `https://pokeapi.co/api/v2/pokemon-species/${id}`
+        );
+        if (!res.ok) return `#${id}`;
+        const data = await res.json();
+        const ko = data.names.find((n) => n.language.name === "ko");
+        const name =
+          ko?.name ??
+          data.names.find((n) => n.language.name === "en")?.name ??
+          `#${id}`;
+        koNameCache[id] = name;
+        localStorage.setItem(KO_NAME_CACHE_KEY, JSON.stringify(koNameCache));
+        return name;
+      }
+
+      // ===== 포켓몬 한 마리 가져오기 (id 랜덤) =====
+      function randId() {
+        return Math.ceil(Math.random() * 1025);
+      } // 1~1025
+      async function fetchPokemon(id) {
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+        if (!res.ok) throw new Error("포켓몬 로드 실패");
+        const data = await res.json();
+        const koName = await getKoreanNameById(data.id);
+        const img =
+          data.sprites?.other?.["official-artwork"]?.front_default ||
+          data.sprites?.front_default ||
+          "";
+        return {
+          id: data.id,
+          name: data.name,
+          koName,
+          img,
+          types: data.types.map((t) => t.type.name),
+        };
+      }
+
+      // ===== DOM refs =====
+      const leftCard = document.getElementById("left-card");
+      const rightCard = document.getElementById("right-card");
+      const L = {
+        img: document.getElementById("left-img"),
+        name: document.getElementById("left-name"),
+        types: document.getElementById("left-types"),
+      };
+      const R = {
+        img: document.getElementById("right-img"),
+        name: document.getElementById("right-name"),
+        types: document.getElementById("right-types"),
+      };
+      const leftBtn = document.getElementById("left-random");
+      const rightBtn = document.getElementById("right-random");
+      const bothBtn = document.getElementById("reroll-both");
+      const battleBtn = document.getElementById("battle");
+      const battleResult = document.getElementById("battle-result");
+
+      let leftData = null,
+        rightData = null;
+
+      function renderSide(side, data) {
+        const el = side === "left" ? L : R;
+        el.img.innerHTML = data.img
+          ? `<img src="${data.img}" alt="${data.koName}">`
+          : `<div class="placeholder">?</div>`;
+        el.name.textContent = `${data.koName} (#${data.id})`;
+        el.types.innerHTML = data.types
+          .map(
+            (t) =>
+              `<span class="badge" style="background:${
+                TYPE_COLORS[t] || "#999"
+              }">${t}</span>`
+          )
+          .join("");
+        updateBattleState();
+      }
+
+      function clearEffects() {
+        leftCard.classList.remove("win", "lose");
+        rightCard.classList.remove("win", "lose");
+      }
+
+      function updateBattleState() {
+        battleBtn.disabled = !(leftData && rightData);
+        battleResult.textContent = "";
+        clearEffects();
+      }
+
+      async function pickLeft() {
+        leftBtn.disabled = true;
+        try {
+          const data = await fetchPokemon(randId());
+          leftData = data;
+          renderSide("left", data);
+        } finally {
+          leftBtn.disabled = false;
+        }
+      }
+      async function pickRight() {
+        rightBtn.disabled = true;
+        try {
+          const data = await fetchPokemon(randId());
+          rightData = data;
+          renderSide("right", data);
+        } finally {
+          rightBtn.disabled = false;
+        }
+      }
+
+      // ===== 이벤트 =====
+      leftBtn.addEventListener("click", pickLeft);
+      rightBtn.addEventListener("click", pickRight);
+      bothBtn.addEventListener("click", async () => {
+        bothBtn.disabled = true;
+        await Promise.all([pickLeft(), pickRight()]);
+        bothBtn.disabled = false;
+      });
+
+      battleBtn.addEventListener("click", () => {
+        if (!(leftData && rightData)) return;
+        clearEffects();
+        const leftWin = Math.random() < 0.5; // 완전 랜덤
+        if (leftWin) {
+          leftCard.classList.add("win");
+          rightCard.classList.add("lose");
+          battleResult.textContent = `승리: ${leftData.koName}`;
+        } else {
+          rightCard.classList.add("win");
+          leftCard.classList.add("lose");
+          battleResult.textContent = `승리: ${rightData.koName}`;
+        }
+      });
+    </script>
+  </body>
+</html>
